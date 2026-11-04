@@ -1,0 +1,6 @@
+data/
+out/
+videos/
+ag_data/
+*.pkl
+__pycache__/
