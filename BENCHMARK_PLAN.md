@@ -35,3 +35,20 @@ ag fine-tune Q4_K_M, 280 frames: R .30 / P .52, predicate-only .62 / .83, 1.6 s/
 
 ## Outputs
 `results_<tag>.json` per run plus one table in this file. Record: model, quant, backend, GPU, driver, prompt hash, video IDs.
+
+## Datasets for the test (all in scope; licence = non-commercial research unless stated)
+| Dataset | Used for | Size / status | Gold |
+|---|---|---|---|
+| **Action Genome** (Ji et al., CVPR 2020) | Main frame-level test: `data/test.jsonl` | 280 frames, 35 test-split videos, 8 frames each. Training used its `train` split (500 videos, ~3.9k frames). | Human annotation (attention / spatial / contact) |
+| **Charades** (Allen AI) | Video source for Action Genome frames and for the Sanjaya demo drops | 480p videos, only the selected ids | n/a (videos only) |
+| **STAR** (Wu et al., MIT-IBM) | Sanjaya hand-annotated clips FL6DF, R9382, 3T785 (Charades videos) | 3 clips, temporal graphs | Hand-made, written from frames (3T785 sampled every 2.5 s) |
+| **Action Genome demo clips** FVINY, 9UU4W, 2KGV3, 1E1EN, QIT2W | Temporal triple recall/precision in the Sanjaya harness (`ag_bench.py`) | 5 clips; confirm none are in the training ids | Human annotation |
+| **Own hand-made clips** test17 (handshake), test20 (4-person meeting) | Temporal scene graph vs hand-made graph (`harness.py --eval`) | 2 clips, source not recorded (stock footage, to be confirmed) | Hand-made |
+| **Unseen live-drop clips** 8D4ZT, WT46G, T3R3K, GKH0F, TK76G, 1ZBUS, JOLLV | End-to-end live pipeline (time, valid output) | 7 clips, 12 s each, not gold-scored | none |
+| **HICO / HICO-DET** | Only the `hico` fine-tune variants | Numbers come from the Hugging Face cards (bf16). Test set not downloaded here, not run. | HICO annotation |
+| **CUHK Avenue** | Planned: anomaly-event evaluation of the Sanjaya harness | Listed as downloaded in the Sanjaya pitch note; not part of this frame-level benchmark | Anomaly labels |
+
+Report each dataset separately; never pool hand-made and human-annotated scores.
+
+## Teacher test (2026-11-12, single run, preliminary)
+Gemini as a teacher on test20 (hand-made gold, harness `score` / `score2`, predicates restricted to the harness vocabulary): `gemini-3.1-flash-lite` recall/precision 0.79 / 1.0 (IoU), coverage 0.79 / 0.80, 3.1 s for the 15.9 s clip; `gemini-3.5-flash` 0.50 / 1.0, coverage 0.50 / 0.71, 9.9 s. One clip, one run, gold is small. Not comparable to the frame-level AG numbers above. Output JSON: `sanjaya/eval/gemini/`.
